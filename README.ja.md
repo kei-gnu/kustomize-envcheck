@@ -47,6 +47,9 @@ kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --output json
 
 # 詳細モード
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --verbose
+
+# 設定ファイルに定義されていない追加の環境変数を表示
+kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --show-extra-vars
 ```
 
 ### 設定ファイル
@@ -136,9 +139,7 @@ Application: web-app
   ⚠ Using default values:
     - DEBUG
     - PORT
-  ℹ Extra variables (not in config):
-    - KUBERNETES_SERVICE_HOST
-    - KUBERNETES_SERVICE_PORT
+  # 追加の変数はデフォルトでは非表示です。表示するには --show-extra-vars を使用してください
 
 Application: worker
   ✗ Status: Failed

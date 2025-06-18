@@ -25,6 +25,9 @@ pub struct Cli {
 
     #[arg(short = 'v', long, help = "Verbose output")]
     pub verbose: bool,
+
+    #[arg(long, help = "Show extra environment variables not defined in config")]
+    pub show_extra_vars: bool,
 }
 
 #[derive(Debug, Clone, clap::ValueEnum)]

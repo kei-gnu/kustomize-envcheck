@@ -29,11 +29,13 @@ pub struct ApplicationResult {
     pub extra_vars: Vec<String>,
 }
 
-pub struct OutputFormatter;
+pub struct OutputFormatter {
+    show_extra_vars: bool,
+}
 
 impl OutputFormatter {
-    pub fn new() -> Self {
-        Self
+    pub fn new(show_extra_vars: bool) -> Self {
+        Self { show_extra_vars }
     }
 
     pub fn format(&self, results: &[CheckResult], format: &OutputFormat) -> Result<String> {
@@ -82,7 +84,7 @@ impl OutputFormatter {
                 }
             }
             
-            if !result.extra_vars.is_empty() {
+            if self.show_extra_vars && !result.extra_vars.is_empty() {
                 writeln!(&mut output, "  {} Extra variables (not in config):", "ℹ".blue())?;
                 for var in &result.extra_vars {
                     writeln!(&mut output, "    - {}", var)?;
@@ -147,7 +149,7 @@ impl OutputFormatter {
                     missing_required: r.missing_required.clone(),
                     missing_optional: r.missing_optional.clone(),
                     using_defaults: r.using_defaults.clone(),
-                    extra_vars: r.extra_vars.clone(),
+                    extra_vars: if self.show_extra_vars { r.extra_vars.clone() } else { vec![] },
                 })
                 .collect(),
         };

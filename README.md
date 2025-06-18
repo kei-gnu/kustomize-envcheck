@@ -47,6 +47,9 @@ kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --output json
 
 # Verbose mode
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --verbose
+
+# Show extra environment variables not defined in config
+kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --show-extra-vars
 ```
 
 ### Configuration file
@@ -136,9 +139,7 @@ Application: web-app
   ⚠ Using default values:
     - DEBUG
     - PORT
-  ℹ Extra variables (not in config):
-    - KUBERNETES_SERVICE_HOST
-    - KUBERNETES_SERVICE_PORT
+  # Extra variables are hidden by default, use --show-extra-vars to display them
 
 Application: worker
   ✗ Status: Failed
