@@ -119,13 +119,28 @@ impl K8sParser {
             for var in vars {
                 if let Some(value) = &var.value {
                     map.insert(var.name.clone(), value.clone());
-                } else if let Some(_source) = &var.value_from {
-                    map.insert(var.name.clone(), "<from source>".to_string());
+                } else if let Some(value_from) = &var.value_from {
+                    let source_description = self.describe_value_from(value_from);
+                    map.insert(var.name.clone(), source_description);
                 }
             }
         }
 
         map
+    }
+
+    fn describe_value_from(&self, value_from: &k8s_openapi::api::core::v1::EnvVarSource) -> String {
+        if let Some(secret_key_ref) = &value_from.secret_key_ref {
+            format!("Secret[{}:{}]", secret_key_ref.name, secret_key_ref.key)
+        } else if let Some(config_map_key_ref) = &value_from.config_map_key_ref {
+            format!("ConfigMap[{}:{}]", config_map_key_ref.name, config_map_key_ref.key)
+        } else if let Some(field_ref) = &value_from.field_ref {
+            format!("Field[{}]", field_ref.field_path)
+        } else if let Some(resource_field_ref) = &value_from.resource_field_ref {
+            format!("Resource[{}]", resource_field_ref.resource)
+        } else {
+            "<unknown source>".to_string()
+        }
     }
 
     fn extract_env_from(&self, env_from: &Option<Vec<k8s_openapi::api::core::v1::EnvFromSource>>) -> Vec<String> {
