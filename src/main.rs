@@ -66,7 +66,7 @@ async fn run() -> Result<()> {
     let checker = EnvChecker::new(config);
     let results = checker.check_resources(&resources, cli.environment.as_deref());
 
-    let formatter = OutputFormatter::new(cli.show_extra_vars);
+    let formatter = OutputFormatter::new(cli.show_extra_vars, cli.verbose);
     let output = formatter.format(&results, &cli.output)?;
 
     println!("{}", output);

@@ -45,7 +45,7 @@ kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --environment 
 # JSON形式で出力
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --output json
 
-# 詳細モード
+# 詳細モード（成功した環境変数も表示）
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --verbose
 
 # 設定ファイルに定義されていない追加の環境変数を表示
@@ -134,12 +134,20 @@ Environment Variable Check Results
 
 Application: web-app
   ✓ Status: Passed
-  ✓ DATABASE_URL: postgresql://localhost:5432/myapp
-  ✓ API_KEY: <from source>
   ⚠ Using default values:
     - DEBUG
     - PORT
   # 追加の変数はデフォルトでは非表示です。表示するには --show-extra-vars を使用してください
+
+# --verbose フラグを使用すると、成功した変数も表示されます：
+Application: web-app
+  ✓ Status: Passed
+  ✓ Passed variables:
+    - DATABASE_URL: postgresql://localhost:5432/myapp
+    - API_KEY: <from source>
+  ⚠ Using default values:
+    - DEBUG
+    - PORT
 
 Application: worker
   ✗ Status: Failed

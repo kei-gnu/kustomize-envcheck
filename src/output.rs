@@ -31,11 +31,12 @@ pub struct ApplicationResult {
 
 pub struct OutputFormatter {
     show_extra_vars: bool,
+    verbose: bool,
 }
 
 impl OutputFormatter {
-    pub fn new(show_extra_vars: bool) -> Self {
-        Self { show_extra_vars }
+    pub fn new(show_extra_vars: bool, verbose: bool) -> Self {
+        Self { show_extra_vars, verbose }
     }
 
     pub fn format(&self, results: &[CheckResult], format: &OutputFormat) -> Result<String> {
@@ -62,6 +63,13 @@ impl OutputFormatter {
             };
             
             writeln!(&mut output, "  {} Status: {:?}", status_icon, result.status)?;
+            
+            if self.verbose && !result.passed_vars.is_empty() {
+                writeln!(&mut output, "  {} Passed variables:", "✓".green())?;
+                for (name, value) in &result.passed_vars {
+                    writeln!(&mut output, "    - {}: {}", name, value.green())?;
+                }
+            }
             
             if !result.missing_required.is_empty() {
                 writeln!(&mut output, "  {} Missing required variables:", "✗".red())?;

@@ -45,7 +45,7 @@ kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --environment 
 # Output as JSON
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --output json
 
-# Verbose mode
+# Verbose mode (shows passed environment variables)
 kustomize-envcheck --kustomize-dir ./k8s --config ./envcheck.yaml --verbose
 
 # Show extra environment variables not defined in config
@@ -134,12 +134,20 @@ Environment Variable Check Results
 
 Application: web-app
   ✓ Status: Passed
-  ✓ DATABASE_URL: postgresql://localhost:5432/myapp
-  ✓ API_KEY: <from source>
   ⚠ Using default values:
     - DEBUG
     - PORT
   # Extra variables are hidden by default, use --show-extra-vars to display them
+
+# With --verbose flag, passed variables are also shown:
+Application: web-app
+  ✓ Status: Passed
+  ✓ Passed variables:
+    - DATABASE_URL: postgresql://localhost:5432/myapp
+    - API_KEY: <from source>
+  ⚠ Using default values:
+    - DEBUG
+    - PORT
 
 Application: worker
   ✗ Status: Failed

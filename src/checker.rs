@@ -13,6 +13,7 @@ pub struct CheckResult {
     pub using_defaults: Vec<String>,
     pub extra_vars: Vec<String>,
     pub validation_errors: Vec<ValidationError>,
+    pub passed_vars: Vec<(String, String)>, // (name, value)
 }
 
 #[derive(Debug, Clone)]
@@ -54,6 +55,7 @@ impl EnvChecker {
             using_defaults: Vec::new(),
             extra_vars: Vec::new(),
             validation_errors: Vec::new(),
+            passed_vars: Vec::new(),
         };
 
         let all_env_vars = self.collect_all_env_vars(&resource.containers);
@@ -64,12 +66,16 @@ impl EnvChecker {
             if !all_env_vars.contains_key(&var.name) {
                 result.missing_required.push(var.name.clone());
                 result.status = CheckStatus::Failed;
-            } else if let Some(pattern) = &var.pattern {
-                if let Some(value) = all_env_vars.get(&var.name) {
+            } else if let Some(value) = all_env_vars.get(&var.name) {
+                if let Some(pattern) = &var.pattern {
                     if let Err(e) = self.validate_pattern(&var.name, value, pattern) {
                         result.validation_errors.push(e);
                         result.status = CheckStatus::Failed;
+                    } else {
+                        result.passed_vars.push((var.name.clone(), value.clone()));
                     }
+                } else {
+                    result.passed_vars.push((var.name.clone(), value.clone()));
                 }
             }
         }
@@ -84,6 +90,8 @@ impl EnvChecker {
                         result.status = CheckStatus::Warning;
                     }
                 }
+            } else if let Some(value) = all_env_vars.get(&var.name) {
+                result.passed_vars.push((var.name.clone(), value.clone()));
             }
         }
 
